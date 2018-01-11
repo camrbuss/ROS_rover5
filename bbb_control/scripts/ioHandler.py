@@ -5,7 +5,7 @@ import math
 
 from geometry_msgs.msg import Twist
 #from beginner_tutorials.msg import Num
-from khan_msgs.msg import wheelSpeed
+from mecanum_drive.msg import wheelSpeed
 import Adafruit_BBIO.GPIO as GPIO
 import Adafruit_BBIO.PWM as PWM
 
@@ -36,13 +36,10 @@ class controller:
 
 	def update(self, msg):
 
-		forward = msg.linear.x
-		right = msg.angular.z
-
-		self._velocityRR = forward + right
-		self._velocityRL = forward - right
-		self._velocityFR = forward - right
-		self._velocityFL = forward + right
+		self._velocityRR = msg.vel_rr
+		self._velocityRL = msg.vel_rl
+		self._velocityFR = msg.vel_fr
+		self._velocityFL = msg.vel_fl
 
 		if self._velocityRR <= 0:
 			GPIO.output(self._RRdir, GPIO.HIGH)
