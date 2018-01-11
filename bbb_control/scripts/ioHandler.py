@@ -53,13 +53,13 @@ class controller:
 			GPIO.output(self._RLdir, GPIO.LOW)
 		PWM.set_duty_cycle(self._RLpwm, abs(self._velocityRL)*33.0)
 
-		if self._velocityRR <= 0:
+		if self._velocityFR <= 0:
 			GPIO.output(self._FRdir, GPIO.HIGH)
 		else:
 			GPIO.output(self._FRdir, GPIO.LOW)
 		PWM.set_duty_cycle(self._FRpwm, abs(self._velocityFR)*33.0)
 
-		if self._velocityRR <= 0:
+		if self._velocityFL <= 0:
 			GPIO.output(self._FLdir, GPIO.HIGH)
 		else:
 			GPIO.output(self._FLdir, GPIO.LOW)
