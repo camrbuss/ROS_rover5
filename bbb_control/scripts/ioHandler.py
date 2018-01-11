@@ -5,7 +5,7 @@ import math
 
 from geometry_msgs.msg import Twist
 #from beginner_tutorials.msg import Num
-from mecanum_drive.msg import wheelSpeed
+from mecanum_driver.msg import wheelSpeed
 import Adafruit_BBIO.GPIO as GPIO
 import Adafruit_BBIO.PWM as PWM
 
