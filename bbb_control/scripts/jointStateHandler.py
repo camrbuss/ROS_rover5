@@ -8,37 +8,60 @@ from sensor_msgs.msg import JointState
 import Adafruit_BBIO.GPIO as GPIO
 import Adafruit_BBIO.PWM as PWM
 
-
 class controller:
-	def __init__(self, pinoutTable, wheelPos):
+	def __init__(self, pinoutTable):
+		self._RRdir = pinoutTable['rear_right_wheel']['IN1']
+		self._RRpwm = pinoutTable['rear_right_wheel']['PWM']
 
-		if wheelPos == 'RR':
-			self._dir = pinoutTable['rear_right_wheel']['IN1']
-			self._pwm = pinoutTable['rear_right_wheel']['PWM']
-		if wheelPos == 'RL':
-			self._dir = pinoutTable['rear_left_wheel']['IN1']
-			self._pwm = pinoutTable['rear_left_wheel']['PWM']
-		if wheelPos == 'FR':
-			self._dir = pinoutTable['front_right_wheel']['IN1']
-			self._pwm = pinoutTable['front_right_wheel']['PWM']
-		if wheelPos == 'FL':
-			self._dir = pinoutTable['front_left_wheel']['IN1']
-			self._pwm = pinoutTable['front_left_wheel']['PWM']
+		self._RLdir = pinoutTable['rear_left_wheel']['IN1']
+		self._RLpwm = pinoutTable['rear_left_wheel']['PWM']
 
-		GPIO.setup(self._dir, GPIO.OUT)
-		PWM.start(self._pwm, 0)
+		self._FRdir = pinoutTable['front_right_wheel']['IN1']
+		self._FRpwm = pinoutTable['front_right_wheel']['PWM']
 
-		self._velocity = 0
+		self._FLdir = pinoutTable['front_left_wheel']['IN1']
+		self._FLpwm = pinoutTable['front_left_wheel']['PWM']
+
+		GPIO.setup(self._RRdir, GPIO.OUT)
+		PWM.start(self._RRpwm, 0)
+		GPIO.setup(self._RLdir, GPIO.OUT)
+		PWM.start(self._RLpwm, 0)
+		GPIO.setup(self._FRdir, GPIO.OUT)
+		PWM.start(self._FRpwm, 0)
+		GPIO.setup(self._FLdir, GPIO.OUT)
+		PWM.start(self._FLpwm, 0)
+
 
 	def update(self, msg):
 
-		self._velocity = msg.velocity
+		self._velocityRR = msg.velocity[0]
+		self._velocityRL = msg.velocity[1]
+		self._velocityFR = msg.velocity[2]
+		self._velocityFL = msg.velocity[3]
 
-		if self._velocity <= 0:
+		if self._velocityRR <= 0:
 			GPIO.output(self._RRdir, GPIO.HIGH)
 		else:
 			GPIO.output(self._RRdir, GPIO.LOW)
-		PWM.set_duty_cycle(self._RRpwm, abs(self._velocityRR)*50.0)
+		PWM.set_duty_cycle(self._RRpwm, abs(self._velocityRR)*33.0)
+
+		if self._velocityRL <= 0:
+			GPIO.output(self._RLdir, GPIO.HIGH)
+		else:
+			GPIO.output(self._RLdir, GPIO.LOW)
+		PWM.set_duty_cycle(self._RLpwm, abs(self._velocityRL)*33.0)
+
+		if self._velocityFR <= 0:
+			GPIO.output(self._FRdir, GPIO.HIGH)
+		else:
+			GPIO.output(self._FRdir, GPIO.LOW)
+		PWM.set_duty_cycle(self._FRpwm, abs(self._velocityFR)*33.0)
+
+		if self._velocityFL <= 0:
+			GPIO.output(self._FLdir, GPIO.HIGH)
+		else:
+			GPIO.output(self._FLdir, GPIO.LOW)
+		PWM.set_duty_cycle(self._FLpwm, abs(self._velocityFL)*33.0)
 
 		return 0
 
@@ -53,13 +76,8 @@ def main():
 'rear_left_wheel' : {'PWM' : 'P9_14', 'IN1' :'P9_15', 'IN2' : 'P9_12'},
 'rear_right_wheel' : {'PWM' : 'P9_16', 'IN1' :'P9_23', 'IN2' : 'P9_30'}}
 
-	RRcont = controller(motorTable,'RR')
-	RLcont = controller(motorTable,'RL')
-	FRcont = controller(motorTable,'FR')
-	FLcont = controller(motorTable,'FL')
-
-	rospy.Subscriber('/wheel_speeds', JointState, RRcont.update)
-
+	myMecanum = controller(motorTable)
+	rospy.Subscriber('/wheels/js', JointState, myMecanum.update)
 
 	rospy.spin() #prevents from sleeping
 
