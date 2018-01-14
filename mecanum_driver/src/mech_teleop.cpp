@@ -21,7 +21,7 @@ public:
     js_.velocity.push_back(y - x - z);
     js_.velocity.push_back(y + x - z);
 
-    printf("%f\n", y+x+z);
+    // printf("%f\n", y+x+z);
 
     vel_pub_.publish(js_);
     //RRsender_.update(y + x + z);
