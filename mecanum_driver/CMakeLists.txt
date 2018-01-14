@@ -24,10 +24,12 @@ catkin_package(CATKIN_DEPENDS std_msgs message_runtime)
 ## Build talker and listener
 include_directories(include ${catkin_INCLUDE_DIRS})
 
+add_executable(mecanum_teleop src/mech_teleop.cpp)
+target_link_libraries(mecanum_teleop ${catkin_LIBRARIES})
+## add_dependencies(mecanum_teleop)
+
 
 install(DIRECTORY msg
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   FILES_MATCHING PATTERN "*.msg"
 )
-
-
